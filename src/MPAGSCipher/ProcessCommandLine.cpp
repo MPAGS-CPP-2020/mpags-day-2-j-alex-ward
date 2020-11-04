@@ -14,7 +14,10 @@ bool processCommandLine (
                           bool& helpRequested,
                           bool& versionRequested,
                           std::string& inputFile,
-                          std::string& outputFile)
+                          std::string& outputFile,
+                          bool& encryptRequested,
+                          bool& decryptRequested,
+                          std::string& key)
 {
   typedef std::vector<std::string>::size_type size_type;
   const size_type nCmdLineArgs {cmdLineArgs.size()};
@@ -57,6 +60,29 @@ bool processCommandLine (
 	        ++i;
       }
     }
+    else if (cmdLineArgs[i] == "--encrypt"){
+        // Handle encrypt option - if encrypt, encryptRequested = true
+        encryptRequested = true;
+    }
+    else if (cmdLineArgs[i] == "--decrypt"){
+        // Handle decrypt option - if decrypt, decryptRequested = true
+        decryptRequested = true;
+    }
+    else if (cmdLineArgs[i] == "--key") {
+      // Handle key option
+      // Next element is key unless --key is the last argument
+      if (i == nCmdLineArgs-1) {
+	      std::cerr << "[error] --key requires a key [0,25]" << std::endl;
+	      // exit main with non-zero return to indicate failure
+	      return false;
+      }
+      else {
+      	// Got key, so assign value and advance past it
+	      key = cmdLineArgs[i+1];
+	      ++i;
+      }
+    }
+
     else {
       // Have an unknown flag to output error message and return non-zero
       // exit status to indicate failure
